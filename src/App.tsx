@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   BrowserRouter,
   Navigate,
@@ -5,70 +6,56 @@ import {
   Routes,
 } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Templates from "./pages/Templates";
-import TemplateDetail from "./pages/TemplateDetail";
-import Pricing from "./pages/Pricing";
-import Dashboard from "./pages/Dashboard";
+import MyTaklifHome from "./pages/MyTaklifHome";
+import MyTaklifCreate from "./pages/MyTaklifCreate";
+import MyTaklifPricing from "./pages/MyTaklifPricing";
+import MyTaklifMusics from "./pages/MyTaklifMusics";
+import MyTaklifFaq from "./pages/MyTaklifFaq";
+import MyTaklifContact from "./pages/MyTaklifContact";
+import MyTaklifInvitationView from "./pages/MyTaklifInvitation";
+import MyTaklifWishes from "./pages/MyTaklifWishes";
+import MyTaklifCPanel from "./pages/MyTaklifCPanel";
 
-import Editor from "./editor/Editor";
+import { recordSiteVisit, syncWithSupabase } from "./data/mytaklifData";
+
+function AppContent() {
+  useEffect(() => {
+    recordSiteVisit();
+    syncWithSupabase();
+  }, []);
+
+  return (
+    <Routes>
+      {/* MYTAKLIF.UZ CORE ROUTES */}
+      <Route path="/" element={<MyTaklifHome />} />
+      <Route path="/create" element={<MyTaklifCreate />} />
+      <Route path="/pricing" element={<MyTaklifPricing />} />
+      <Route path="/musics" element={<MyTaklifMusics />} />
+      <Route path="/faq" element={<MyTaklifFaq />} />
+      <Route path="/contact" element={<MyTaklifContact />} />
+
+      {/* INVITATION & WISHES */}
+      <Route path="/t/:slug" element={<MyTaklifInvitationView />} />
+      <Route path="/t/:slug/tilaklar" element={<MyTaklifWishes />} />
+
+      {/* ADMIN CONTROL PANEL */}
+      <Route path="/cpanel" element={<MyTaklifCPanel />} />
+
+      {/* COMPATIBILITY REDIRECTS */}
+      <Route path="/admin" element={<Navigate to="/cpanel" replace />} />
+      <Route path="/templates" element={<Navigate to="/create" replace />} />
+      <Route path="/dashboard" element={<Navigate to="/cpanel" replace />} />
+
+      {/* FALLBACK */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* =========================
-            PUBLIC PAGES
-        ========================== */}
-
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-        <Route
-          path="/templates"
-          element={<Templates />}
-        />
-
-        <Route
-          path="/templates/:id"
-          element={<TemplateDetail />}
-        />
-
-        <Route
-          path="/pricing"
-          element={<Pricing />}
-        />
-
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
-
-        {/* =========================
-            EDITOR
-        ========================== */}
-
-        <Route
-          path="/editor/:templateId"
-          element={<Editor />}
-        />
-
-        {/* =========================
-            FALLBACK
-        ========================== */}
-
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/"
-              replace
-            />
-          }
-        />
-      </Routes>
+      <AppContent />
     </BrowserRouter>
   );
 }
